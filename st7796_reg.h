@@ -30,7 +30,7 @@
 #include <stdint.h>
 
 /** 
-  * @brief  ST7735 Registers  
+  * @brief  ST7796 Registers
   */
 #define ST7796_NOP                          0x00U  /* No Operation: NOP                           */
 #define ST7796_SW_RESET                     0x01U  /* Software reset: SWRESET                     */
@@ -75,8 +75,8 @@
 #define ST7796_READ_ID1                     0xDAU  /* Read ID1: RDID1                             */
 #define ST7796_READ_ID2                     0xDBU  /* Read ID2: RDID2                             */
 #define ST7796_READ_ID3                     0xDCU  /* Read ID3: RDID3                             */
-#define ST7735_NV_CTRL2                     0xDEU  /* NVM Read Command: NVCTR2                    */ 
-#define ST7735_NV_CTRL3                     0xDFU  /* NVM Write Command: NVCTR3                   */
+#define ST7796_NV_CTRL2                     0xDEU  /* NVM Read Command: NVCTR2                    */
+#define ST7796_NV_CTRL3                     0xDFU  /* NVM Write Command: NVCTR3                   */
 #define ST7796_PV_GAMMA_CTRL                0xE0U  /* Set Gamma adjustment (+ polarity): PGC 	  */
 #define ST7796_NV_GAMMA_CTRL                0xE1U  /* Set Gamma adjustment (- polarity): NGC 	  */
 #define ST7796_COM_SET_CTRL                 0xF0U  /* Command set control: CSCON                  */
@@ -85,7 +85,7 @@
   * @}
   */
   
-/** @defgroup ST7735_REG_Exported_Types Exported Types
+/** @defgroup ST7796_REG_Exported_Types Exported Types
   * @{
   */ 
 typedef int32_t (*ST7796_Write_Func)(void *, uint8_t, uint8_t*, uint32_t);
@@ -106,13 +106,13 @@ typedef struct
   * @}
   */
 
-/** @defgroup ST7735_REG_Exported_Functions Exported Functions
+/** @defgroup ST7796_REG_Exported_Functions Exported Functions
   * @{
   */ 
-int32_t st7796_write_reg(st7735_ctx_t *ctx, uint8_t reg, uint8_t *pdata, uint32_t length);
-int32_t st7796_read_reg(st7735_ctx_t *ctx, uint8_t reg, uint8_t *pdata);
-int32_t st7796_send_data(st7735_ctx_t *ctx, uint8_t *pdata, uint32_t length);
-int32_t st7796_recv_data(st7735_ctx_t *ctx, uint8_t *pdata, uint32_t length);
+int32_t st7796_write_reg(st7796_ctx_t *ctx, uint8_t reg, uint8_t *pdata, uint32_t length);
+int32_t st7796_read_reg(st7796_ctx_t *ctx, uint8_t reg, uint8_t *pdata);
+int32_t st7796_send_data(st7796_ctx_t *ctx, uint8_t *pdata, uint32_t length);
+int32_t st7796_recv_data(st7796_ctx_t *ctx, uint8_t *pdata, uint32_t length);
 
 /**
   * @}
