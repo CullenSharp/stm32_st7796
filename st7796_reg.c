@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    st7735_reg.c
+  * @file    st7796_reg.c
   * @author  MCD Application Team
   * @brief   This file includes the LCD driver for st7735 LCD.
   ******************************************************************************
@@ -18,45 +18,29 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "st7735_reg.h"
-
-/** @addtogroup BSP
-  * @{
-  */ 
-
-/** @addtogroup Components
-  * @{
-  */ 
-  
-/** @addtogroup ST7735_REG
-  * @{
-  */
- 
-/** @addtogroup ST7735_REG_Exported_Functions
-  * @{
-  */   
+#include "st7796_reg.h"
 
 /**
-  * @brief  Read ST7735 register
+  * @brief  Read ST7796 register
   * @param  ctx   Component context
   * @param  reg   Register to read
   * @param  pdata data to read from the register
   * @retval Component status
   */
-int32_t st7735_read_reg(st7735_ctx_t *ctx, uint8_t reg, uint8_t *pdata)
+int32_t st7796_read_reg(st7796_ctx_t *ctx, uint8_t reg, uint8_t *pdata)
 {
   return ctx->ReadReg(ctx->handle, reg, pdata);
 }
 
 /**
-  * @brief  Write ST7735 register
+  * @brief  Write ST7796 register
   * @param  ctx    Component context
   * @param  reg    Register to write
   * @param  pdata  data to write to the register
   * @param  length length of data to write to the register
   * @retval Component status
   */
-int32_t st7735_write_reg(st7735_ctx_t *ctx, uint8_t reg, uint8_t *pdata, uint32_t length)
+int32_t st7796_write_reg(st7796_ctx_t *ctx, uint8_t reg, uint8_t *pdata, uint32_t length)
 {
   return ctx->WriteReg(ctx->handle, reg, pdata, length);
 }
@@ -68,7 +52,7 @@ int32_t st7735_write_reg(st7735_ctx_t *ctx, uint8_t reg, uint8_t *pdata, uint32_
   * @param  length length of data to write
   * @retval Component status
   */
-int32_t st7735_send_data(st7735_ctx_t *ctx, uint8_t *pdata, uint32_t length)
+int32_t st7796_send_data(st7796_ctx_t *ctx, uint8_t *pdata, uint32_t length)
 {
   return ctx->SendData(ctx->handle, pdata, length);
 }
@@ -80,7 +64,7 @@ int32_t st7735_send_data(st7735_ctx_t *ctx, uint8_t *pdata, uint32_t length)
   * @param  length length of data to read
   * @retval Component status
   */
-int32_t st7735_recv_data(st7735_ctx_t *ctx, uint8_t *pdata, uint32_t length)
+int32_t st7796_recv_data(st7735_ctx_t *ctx, uint8_t *pdata, uint32_t length)
 {
   return ctx->RecvData(ctx->handle, pdata, length);
 }
