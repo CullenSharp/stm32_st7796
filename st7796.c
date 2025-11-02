@@ -168,152 +168,153 @@ int32_t ST7796_Init(ST7796_Object_t *pObj, uint32_t ColorCoding, uint32_t Orient
   }
   else
   {
-    /* Out of sleep mode, 0 args, no delay */
+
+	ST7796_IO_Delay(pObj, 120);
+
+	/* software reset, 0 arguments, no delay */
+	tmp = 0x00U;
+	ret = st7796_write_reg(&pObj->Ctx, ST7796_SW_RESET, &tmp, 1);
+	ST7796_IO_Delay(pObj, 120);
+
+
+    /* Out of sleep mode, 0 arguments, no delay */
     tmp = 0x00U;
-    ret = st7796_write_reg(&pObj->Ctx, ST7796_SLEEP_OUT, &tmp, 1);
-    /* Frame rate ctrl - normal mode, 3 args:Rate = fosc/(1x2+40) * (LINE+2C+2D)*/
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_FRAME_RATE_CTRL1, &tmp, 0);
-    tmp = 0x01U;
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_SLEEP_OUT, &tmp, 1);
+    ST7796_IO_Delay(pObj, 120);
+
+    /* Enable extension command 2, 2 arguments, no delay*/
+    tmp = 0xC3U;
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_COM_SET_CTRL, &tmp, 1);
+    tmp = 0x96U;
     ret += st7796_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x2CU;
-    ret += st7796_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x2DU;
-    ret += st7796_send_data(&pObj->Ctx, &tmp, 1);
 
-    /* Frame rate control - idle mode, 3 args:Rate = fosc/(1x2+40) * (LINE+2C+2D) */
+
+    /* Memory Data Access Control, 1 arguments, no delay  */
+    /*	MX = 0, MY = 0: (0,0) is top left,  (319, 479) is bottom right
+     * RGB = 0 data is sent in RGB order
+     **/
+    tmp = 0x00U;
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_MADCTL, &tmp, 1);
+
+    /* Interface Pixel Format, 1 arguments, no delay */
+    /* Use 16bit/pixel */
+    tmp = 0x55U;
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_COLOR_MODE, &tmp, 1);
+
+    /* Display Inversion Control, 1 arguments, no delay */
+    /* set 1-dot inversion reduces flicker */
     tmp = 0x01U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_FRAME_RATE_CTRL2, &tmp, 1);
-    tmp = 0x2CU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_FRAME_RATE_CTRL2, &tmp, 1);
-    tmp = 0x2DU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_FRAME_RATE_CTRL2, &tmp, 1);
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_INV_CTRL, &tmp, 1);
 
-    /* Frame rate ctrl - partial mode, 6 args: Dot inversion mode, Line inversion mode */
-    tmp = 0x01U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_FRAME_RATE_CTRL3, &tmp, 1);
-    tmp = 0x2CU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_FRAME_RATE_CTRL3, &tmp, 1);
-    tmp = 0x2DU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_FRAME_RATE_CTRL3, &tmp, 1);
-    tmp = 0x01U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_FRAME_RATE_CTRL3, &tmp, 1);
-    tmp = 0x2CU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_FRAME_RATE_CTRL3, &tmp, 1);
-    tmp = 0x2DU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_FRAME_RATE_CTRL3, &tmp, 1);
+    /* Display Function Control, 3 arguments, no delay */
+    tmp = 0x80U; // Bypass
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_DISPLAY_SETTING, &tmp, 1);
+    tmp = 0x02U; //Source Output Scan from S1 to S960, Gate Output scan from G1 to G480, scan cycle=2
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_DISPLAY_SETTING, &tmp, 1);
+    tmp = 0x3BU; // LCD Drive Line = 8*(59+1)
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_DISPLAY_SETTING, &tmp, 1);
 
-    /* Display inversion ctrl, 1 arg, no delay: No inversion */
-    tmp = 0x07U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_FRAME_INVERSION_CTRL, &tmp, 1);
+    /* Display Output Control Adjust, 8 arguments, no delay*/
+    tmp = 0x40U;
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_DISP_CTRL_ADJ, &tmp, 1);
+    tmp = 0x8AU; // Given
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_DISP_CTRL_ADJ, &tmp, 1);
+    tmp = 0x00U; // Given
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_DISP_CTRL_ADJ, &tmp, 1);
+    tmp = 0x29U; // Source equalizing period time = 22.5us
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_DISP_CTRL_ADJ, &tmp, 1);
+    tmp = 0x19U; // timing for "Gate Start"=25 (Tclk)
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_DISP_CTRL_ADJ, &tmp, 1);
+    tmp = 0xA5U; //Timing for "Gate End"=37 (Tclk), Gate driver EQ function ON
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_DISP_CTRL_ADJ, &tmp, 1);
+    tmp = 0x33U; // Given
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_DISP_CTRL_ADJ, &tmp, 1);
 
-    /* Power control, 3 args, no delay: -4.6V , AUTO mode */
-    tmp = 0xA2U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_PWR_CTRL1, &tmp, 1);
-    tmp = 0x02U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_PWR_CTRL1, &tmp, 1);
-    tmp = 0x84U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_PWR_CTRL1, &tmp, 1);
-
-    /* Power control, 1 arg, no delay: VGH25 = 2.4C VGSEL = -10 VGH = 3 * AVDD */
-    tmp = 0xC5U;
+    /* Power Control 2, 1 arguments, no delay */
+    tmp = 0x06U;  //VAP(GVDD)=3.85+( vcom+vcom offset), VAN(GVCL)=-3.85+( vcom+vcom offset)
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PWR_CTRL2, &tmp, 1);
 
-    /* Power control, 2 args, no delay: Opamp current small, Boost frequency */
-    tmp = 0x0AU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_PWR_CTRL3, &tmp, 1);
-    tmp = 0x00U;
+    /* Power Control 3, 1 arguments, no delay */
+    tmp = 0xA7U; // Source driving current level=low, Gamma driving current level=High
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PWR_CTRL3, &tmp, 1);
 
-    /* Power control, 2 args, no delay: BCLK/2, Opamp current small & Medium low */
-    tmp = 0x8AU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_PWR_CTRL4, &tmp, 1);
-    tmp = 0x2AU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_PWR_CTRL4, &tmp, 1);
-
-    /* Power control, 2 args, no delay */
-    tmp = 0x8AU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_PWR_CTRL5, &tmp, 1);
-    tmp = 0xEEU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_PWR_CTRL5, &tmp, 1);
-
-    /* Power control, 1 arg, no delay */
-    tmp = 0x0EU;
+    /* VCOM Control 1, 1 arguments, no delay */
+    tmp = 0x18U; // VCOM=0.9
     ret += st7796_write_reg(&pObj->Ctx, ST7796_VCOMH_VCOML_CTRL1, &tmp, 1);
 
-    /* Don't invert display, no args, no delay */
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_DISPLAY_INVERSION_OFF, &tmp, 0);
-
-    /* Set color mode, 1 arg, no delay */
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_COLOR_MODE, (uint8_t*)&ColorCoding, 1);
+    ST7796_IO_Delay(pObj, 120);
 
     /* Magical unicorn dust, 16 args, no delay */
-    tmp = 0x02U;
+    // ST7796 Gamma Sequence
+    tmp = 0xF0U;
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1); // Gamma +
+    tmp = 0x09U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x1CU;
+    tmp = 0x0bU;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x07U;
+    tmp = 0x06U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x12U;
+    tmp = 0x04U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x37U;
+    tmp = 0x15U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x32U;
+    tmp = 0x2FU;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x29U;
+    tmp = 0x54U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x2DU;
+    tmp = 0x42U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x29U;
+    tmp = 0x3CU;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x25U;
+    tmp = 0x17U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x2BU;
+    tmp = 0x14U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x39U;
+    tmp = 0x18U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x00U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x01U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x03U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x10U;
+    tmp = 0x1BU;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_PV_GAMMA_CTRL, &tmp, 1);
 
-    /* Sparkles and rainbows, 16 args, no delay */
-    tmp = 0x03U;
+    tmp = 0xE0U;
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1); // Gamma +
+    tmp = 0x09U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x1DU;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x07U;
+    tmp = 0x0BU;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
     tmp = 0x06U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x2EU;
+    tmp = 0x04U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x2CU;
+    tmp = 0x03U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x29U;
+    tmp = 0x2BU;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x2DU;
+    tmp = 0x43U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x2EU;
+    tmp = 0x42U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x2EU;
+    tmp = 0x3BU;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x37U;
+    tmp = 0x16U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x3FU;
+    tmp = 0x14U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x00U;
+    tmp = 0x17U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x00U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x02U;
-    ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
-    tmp = 0x10U;
+    tmp = 0x1BU;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NV_GAMMA_CTRL, &tmp, 1);
 
+    ST7796_IO_Delay(pObj, 120);
+
+    /* Command Set Control, 1 arguments, no delay */
+    tmp = 0x3CU;
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_COM_SET_CTRL, &tmp, 1);
+    tmp = 0x69U;
+    ret += st7796_write_reg(&pObj->Ctx, ST7796_COM_SET_CTRL, &tmp, 1);
+
+    ST7796_IO_Delay(pObj, 120);
+
+    /* Display On, 1 arguments, no delay */
     /* Normal display on, no args, no delay */
     tmp  = 0x00U;
     ret += st7796_write_reg(&pObj->Ctx, ST7796_NORMAL_DISPLAY_OFF, &tmp, 1);
@@ -413,7 +414,7 @@ int32_t ST7796_DisplayOff(ST7796_Object_t *pObj)
   ret += st7796_write_reg(&pObj->Ctx, ST7796_DISPLAY_OFF, &tmp, 0);
   (void)ST7796_IO_Delay(pObj, 10);
   ret += st7796_write_reg(&pObj->Ctx, ST7796_MADCTL, &tmp, 0);
-  tmp = 0xC0U;
+  tmp = 0x00U;
   ret += st7796_send_data(&pObj->Ctx, &tmp, 1);
   if(ret != ST7796_OK)
   {
@@ -476,7 +477,8 @@ int32_t ST7796_SetOrientation(ST7796_Object_t *pObj, uint32_t Orientation)
     ST7796Ctx.Height = ST7796_WIDTH;
   }
 
-  ret = ST7796_SetDisplayWindow(pObj, 0U, 0U, ST7796Ctx.Width, ST7796Ctx.Height);
+
+  ret = ST7796_SetDisplayWindow(pObj, 0U, ST7796Ctx.Height - 1, ST7796Ctx.Width, ST7796Ctx.Height);
 
   tmp = (uint8_t)OrientationTab[Orientation][1];
   ret += st7796_write_reg(&pObj->Ctx, ST7796_MADCTL, &tmp, 1);
@@ -997,22 +999,6 @@ static int32_t ST7796_IO_Delay(ST7796_Object_t *pObj, uint32_t Delay)
   }
   return ST7796_OK;
 }
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

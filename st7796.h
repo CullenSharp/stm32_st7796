@@ -86,9 +86,6 @@ typedef struct
   
 } ST7796_LCD_Drv_t;
   
-/**
-  * @}
-  */ 
 
 /** @defgroup ST7796_Exported_Constants Exported Constants
   * @{
@@ -108,8 +105,8 @@ typedef struct
 /** 
   * @brief  ST7796 Size
   */  
-#define  ST7796_WIDTH           128U
-#define  ST7796_HEIGHT          160U
+#define  ST7796_WIDTH           320U
+#define  ST7796_HEIGHT          480U
 
 /**
  *  @brief LCD_OrientationTypeDef
@@ -127,9 +124,6 @@ typedef struct
 #define ST7796_FORMAT_RBG565                0x05U /* Pixel format chosen is RGB565 : 16 bpp */
 #define ST7796_FORMAT_RBG666                0x06U /* Pixel format chosen is RGB666 : 18 bpp */
 #define ST7796_FORMAT_DEFAULT               ST7796_FORMAT_RBG565
-/**
-  * @}
-  */
   
 /** @defgroup ST7796_Exported_Functions Exported Functions
   * @{
@@ -158,26 +152,11 @@ int32_t ST7796_GetYSize(ST7796_Object_t *pObj, uint32_t *YSize);
 
 extern ST7796_LCD_Drv_t   ST7796_LCD_Driver;
 
-/**
-  * @}
-  */ 
-      
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* ST7796_H */
 
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */
-  
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

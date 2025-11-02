@@ -64,25 +64,10 @@ int32_t st7796_send_data(st7796_ctx_t *ctx, uint8_t *pdata, uint32_t length)
   * @param  length length of data to read
   * @retval Component status
   */
-int32_t st7796_recv_data(st7735_ctx_t *ctx, uint8_t *pdata, uint32_t length)
+int32_t st7796_recv_data(st7796_ctx_t *ctx, uint8_t *pdata, uint32_t length)
 {
   return ctx->RecvData(ctx->handle, pdata, length);
 }
 
-/**
-  * @}
-  */ 
 
-/**
-  * @}
-  */ 
-  
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */
-  
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

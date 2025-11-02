@@ -38,7 +38,7 @@
 #define ST7796_READ_STATUS                  0x09U  /* Read Display Status: RDDST                  */
 #define ST7796_READ_POWER_MODE              0x0AU  /* Read Display Power: RDDPM                   */
 #define ST7796_READ_MADCTL                  0x0BU  /* Read Display: RDDMADCTL                     */
-#define ST7796_READ_PIXEL_FORMAT            0x0CU  /* Read Display Pixel: RDDCOLMOD               */
+#define ST7796_READ_PIXEL_FORMAT            0x0CU  /* Read Display Pixel: RDPIXFMT               */
 #define ST7796_READ_IMAGE_MODE              0x0DU  /* Read Display Image: RDDIM                   */
 #define ST7796_READ_SIGNAL_MODE             0x0EU  /* Read Display Signal: RDDSM                  */
 #define ST7796_SLEEP_IN                     0x10U  /* Sleep in & booster off: SLPIN               */
@@ -63,12 +63,13 @@
 #define ST7796_FRAME_RATE_CTRL1             0xB1U  /* In normal mode (Full colors): FRMCTR1       */
 #define ST7796_FRAME_RATE_CTRL2             0xB2U  /* In Idle mode (8-colors): FRMCTR2            */
 #define ST7796_FRAME_RATE_CTRL3             0xB3U  /* In partial mode + Full colors: FRMCTR3      */
-#define ST7796_DISPLAY_SETTING              0xB6U  /* Display function setting                    */
+#define ST7796_INV_CTRL						0xB4U  /* Display Inversion Control: INVTR			  */
+#define ST7796_DISPLAY_SETTING              0xB6U  /* Display function control: DFC               */
 #define ST7796_PWR_CTRL1                    0xC0U  /* Power control setting: PWR1                 */
 #define ST7796_PWR_CTRL2                    0xC1U  /* Power control setting: PWR2                 */
 #define ST7796_PWR_CTRL3                    0xC2U  /* In normal mode (Full colors): PWR3          */
 #define ST7796_VCOMH_VCOML_CTRL1            0xC5U  /* VCOM control 1: VMCTR1                      */
-#define ST7796_VMOF_CTRL                    0xC6U  /* Set VCOM offset control: VMOFCTR            */
+#define ST7796_VMOF_CTRL                    0xC6U  /* Set VCOM offset control: VCM Offset         */
 #define ST7796_NVM_BYTE_PROGRAM             0xD1U  /* Set LCM version code: NVMBPROG              */
 #define ST7796_NVM_STATUS_READ              0xD2U  /* NVM status read: NVMSTRD                    */
 #define ST7796_NV_CTRL1                     0xD9U  /* NVM control status: NVCTR1                  */
@@ -79,12 +80,9 @@
 #define ST7796_NV_CTRL3                     0xDFU  /* NVM Write Command: NVCTR3                   */
 #define ST7796_PV_GAMMA_CTRL                0xE0U  /* Set Gamma adjustment (+ polarity): PGC 	  */
 #define ST7796_NV_GAMMA_CTRL                0xE1U  /* Set Gamma adjustment (- polarity): NGC 	  */
+#define ST7796_DISP_CTRL_ADJ				0xE8U  /* Display Output Ctrl Adjust: DOCA			  */
 #define ST7796_COM_SET_CTRL                 0xF0U  /* Command set control: CSCON                  */
 
-/**
-  * @}
-  */
-  
 /** @defgroup ST7796_REG_Exported_Types Exported Types
   * @{
   */ 
@@ -102,9 +100,6 @@ typedef struct
   void                *handle;
 } st7796_ctx_t;
 
-/**
-  * @}
-  */
 
 /** @defgroup ST7796_REG_Exported_Functions Exported Functions
   * @{
@@ -124,16 +119,4 @@ int32_t st7796_recv_data(st7796_ctx_t *ctx, uint8_t *pdata, uint32_t length);
 
 #endif /* ST7796_REG_H */
 
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */
-  
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
