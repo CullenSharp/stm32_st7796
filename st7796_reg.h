@@ -22,10 +22,6 @@
 #ifndef ST7796_REG_H
 #define ST7796_REG_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif 
-
 /* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
 
@@ -54,6 +50,8 @@
 #define ST7796_WRITE_RAM                    0x2CU  /* Memory write: RAMWR                         */
 #define ST7796_READ_RAM                     0x2EU  /* Memory read: RAMRD                          */
 #define ST7796_PTLAR                        0x30U  /* Partial start/end address set: PTLAR        */
+#define ST7796_VERT_SCROLLING_DEF			0x33U  /* Vertical Scrolling Definition: VSCRDEF	  */
+#define ST7796_VERT_SCROLLING_ADDR			0x37U  /* Vertical Scrolling Start Address: VSCRSADD  */
 #define ST7796_TE_LINE_OFF                  0x34U  /* Tearing effect line off: TEOFF              */
 #define ST7796_TE_LINE_ON                   0x35U  /* Tearing effect mode set & on: TEON          */
 #define ST7796_MADCTL                       0x36U  /* Memory data access control: MADCTL          */
@@ -83,38 +81,51 @@
 #define ST7796_DISP_CTRL_ADJ				0xE8U  /* Display Output Ctrl Adjust: DOCA			  */
 #define ST7796_COM_SET_CTRL                 0xF0U  /* Command set control: CSCON                  */
 
-/** @defgroup ST7796_REG_Exported_Types Exported Types
-  * @{
-  */ 
-typedef int32_t (*ST7796_Write_Func)(void *, uint8_t, uint8_t*, uint32_t);
-typedef int32_t (*ST7796_Read_Func) (void *, uint8_t, uint8_t*);
-typedef int32_t (*ST7796_Send_Func) (void *, uint8_t*, uint32_t);
-typedef int32_t (*ST7796_Recv_Func) (void *, uint8_t*, uint32_t);
+//-----------------------------------------------------------------------------
+#define ST7796_MAD_RGB        0x00
+#define ST7796_MAD_BGR        0x08
 
-typedef struct
-{
-  ST7796_Write_Func   WriteReg;
-  ST7796_Read_Func    ReadReg;
-  ST7796_Send_Func    SendData;
-  ST7796_Recv_Func    RecvData;
-  void                *handle;
-} st7796_ctx_t;
+#define ST7796_MAD_VERTICAL   0x20
+#define ST7796_MAD_HORIZONTAL 0x00
+#define ST7796_MAD_X_LEFT     0x00
+#define ST7796_MAD_X_RIGHT    0x40
+#define ST7796_MAD_Y_UP       0x00
+#define ST7796_MAD_Y_DOWN     0x80
 
+#if ST7796_COLORMODE == 0
+#define ST7796_MAD_COLORMODE  ST7796_MAD_RGB
+#else
+#define ST7796_MAD_COLORMODE  ST7796_MAD_BGR
+#endif
 
-/** @defgroup ST7796_REG_Exported_Functions Exported Functions
-  * @{
-  */ 
-int32_t st7796_write_reg(st7796_ctx_t *ctx, uint8_t reg, uint8_t *pdata, uint32_t length);
-int32_t st7796_read_reg(st7796_ctx_t *ctx, uint8_t reg, uint8_t *pdata);
-int32_t st7796_send_data(st7796_ctx_t *ctx, uint8_t *pdata, uint32_t length);
-int32_t st7796_recv_data(st7796_ctx_t *ctx, uint8_t *pdata, uint32_t length);
-
-/**
-  * @}
-  */ 
-      
-#ifdef __cplusplus
-}
+#if (ST7796_ORIENTATION == 0)
+#define ST7796_SIZE_X                     ST7796_LCD_PIXEL_WIDTH
+#define ST7796_SIZE_Y                     ST7796_LCD_PIXEL_HEIGHT
+#define ST7796_MAD_DATA_RIGHT_THEN_UP     (ST7796_MAD_COLORMODE | ST7796_MAD_X_RIGHT | ST7796_MAD_Y_UP | ST7796_MAD_HORIZONTAL)
+#define ST7796_MAD_DATA_RIGHT_THEN_DOWN   (ST7796_MAD_COLORMODE | ST7796_MAD_X_RIGHT | ST7796_MAD_Y_DOWN | ST7796_MAD_HORIZONTAL)
+#define XSIZE                              Xsize
+#define YSIZE                              Ysize
+#elif (ST7796_ORIENTATION == 1)
+#define ST7796_SIZE_X                     ST7796_LCD_PIXEL_HEIGHT
+#define ST7796_SIZE_Y                     ST7796_LCD_PIXEL_WIDTH
+#define ST7796_MAD_DATA_RIGHT_THEN_UP     (ST7796_MAD_COLORMODE | ST7796_MAD_X_RIGHT | ST7796_MAD_Y_DOWN | ST7796_MAD_VERTICAL)
+#define ST7796_MAD_DATA_RIGHT_THEN_DOWN   (ST7796_MAD_COLORMODE | ST7796_MAD_X_LEFT  | ST7796_MAD_Y_DOWN | ST7796_MAD_VERTICAL)
+#define XSIZE                              Ysize
+#define YSIZE                              Xsize
+#elif (ST7796_ORIENTATION == 2)
+#define ST7796_SIZE_X                     ST7796_LCD_PIXEL_WIDTH
+#define ST7796_SIZE_Y                     ST7796_LCD_PIXEL_HEIGHT
+#define ST7796_MAD_DATA_RIGHT_THEN_UP     (ST7796_MAD_COLORMODE | ST7796_MAD_X_LEFT  | ST7796_MAD_Y_DOWN | ST7796_MAD_HORIZONTAL)
+#define ST7796_MAD_DATA_RIGHT_THEN_DOWN   (ST7796_MAD_COLORMODE | ST7796_MAD_X_LEFT  | ST7796_MAD_Y_UP | ST7796_MAD_HORIZONTAL)
+#define XSIZE                              Xsize
+#define YSIZE                              Ysize
+#elif (ST7796_ORIENTATION == 3)
+#define ST7796_SIZE_X                     ST7796_LCD_PIXEL_HEIGHT
+#define ST7796_SIZE_Y                     ST7796_LCD_PIXEL_WIDTH
+#define ST7796_MAD_DATA_RIGHT_THEN_UP     (ST7796_MAD_COLORMODE | ST7796_MAD_X_LEFT  | ST7796_MAD_Y_UP | ST7796_MAD_VERTICAL)
+#define ST7796_MAD_DATA_RIGHT_THEN_DOWN   (ST7796_MAD_COLORMODE | ST7796_MAD_X_RIGHT | ST7796_MAD_Y_UP | ST7796_MAD_VERTICAL)
+#define XSIZE                              Ysize
+#define YSIZE                              Xsize
 #endif
 
 #endif /* ST7796_REG_H */

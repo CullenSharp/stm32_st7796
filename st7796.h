@@ -1,161 +1,154 @@
 /**
-  ******************************************************************************
-  * @file    st7796.h
-  * @author  MCD Application Team
-  * @brief   This file contains all the functions prototypes for the st7796.c
-  *          driver.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2018 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    st7796.h
+ * @author  MCD Application Team
+ * @brief   This file contains all the configuration options for the st7796
+ *          driver.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2018 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef ST7796_H
 #define ST7796_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif 
+/* Orientation
+ - 0: 240x320 portrait (plug in top)
+ - 1: 320x240 landscape (plug in left)
+ - 2: 240x320 portrait (plug in bottom)
+ - 3: 320x240 landscape (plug in right) */
+#define  ST7796_ORIENTATION             0
 
-/* Includes ------------------------------------------------------------------*/
-#include "st7796_reg.h"
-#include <stddef.h>
+/* To clear the screen before display turning on ?
+ - 0: does not clear
+ - 1: clear */
+#define  ST7796_INITCLEAR               1
 
-typedef int32_t (*ST7796_Init_Func)     (void);
-typedef int32_t (*ST7796_DeInit_Func)   (void);
-typedef int32_t (*ST7796_GetTick_Func)  (void);
-typedef int32_t (*ST7796_Delay_Func)    (uint32_t);
-typedef int32_t (*ST7796_WriteReg_Func) (uint8_t, uint8_t*, uint32_t);
-typedef int32_t (*ST7796_ReadReg_Func)  (uint8_t, uint8_t*);
-typedef int32_t (*ST7796_SendData_Func) (uint8_t*, uint32_t);
-typedef int32_t (*ST7796_RecvData_Func) (uint8_t*, uint32_t);
+/* Color order (0 = RGB, 1 = BGR) */
+#define  ST7796_COLORMODE               0
 
-typedef struct
-{
-  ST7796_Init_Func          Init;
-  ST7796_DeInit_Func        DeInit;
-  uint16_t                  Address;  
-  ST7796_WriteReg_Func      WriteReg;
-  ST7796_ReadReg_Func       ReadReg;
-  ST7796_SendData_Func      SendData;
-  ST7796_RecvData_Func      RecvData;
-  ST7796_GetTick_Func       GetTick;
-} ST7796_IO_t;
+/* Draw and read bitdeph (16: RGB565, 24: RGB888)
+ note: my SPI ST7796 LCD only readable if ST7796_READBITDEPTH 24 */
+#define  ST7796_WRITEBITDEPTH           16
+#define  ST7796_READBITDEPTH            24
 
- 
-typedef struct
-{
-  ST7796_IO_t         IO;
-  st7796_ctx_t        Ctx;
-  uint8_t             IsInitialized;
-} ST7796_Object_t;
+// ILI9341 physic resolution (in 0 orientation)
+#define  ST7796_LCD_PIXEL_WIDTH         320U
+#define  ST7796_LCD_PIXEL_HEIGHT        480U
 
-typedef struct
-{
-  /* Control functions */
-  int32_t (*Init             )(ST7796_Object_t*, uint32_t, uint32_t);
-  int32_t (*DeInit           )(ST7796_Object_t*);
-  int32_t (*ReadID           )(ST7796_Object_t*, uint32_t*);
-  int32_t (*DisplayOn        )(ST7796_Object_t*);
-  int32_t (*DisplayOff       )(ST7796_Object_t*);
-  int32_t (*SetBrightness    )(ST7796_Object_t*, uint32_t);
-  int32_t (*GetBrightness    )(ST7796_Object_t*, uint32_t*);
-  int32_t (*SetOrientation   )(ST7796_Object_t*, uint32_t);
-  int32_t (*GetOrientation   )(ST7796_Object_t*, uint32_t*);
+#define ST7796_SETWINDOW(x1, x2, y1, y2) \
+  { transdata.d16[0] = __REVSH(x1); transdata.d16[1] = __REVSH(x2); LCD_IO_WriteCmd8MultipleData8(ST7796_CASET, &transdata, 4); \
+    transdata.d16[0] = __REVSH(y1); transdata.d16[1] = __REVSH(y2); LCD_IO_WriteCmd8MultipleData8(ST7796_PASET, &transdata, 4); }
 
-  /* Drawing functions*/
-  int32_t ( *SetCursor       ) (ST7796_Object_t*, uint32_t, uint32_t);
-  int32_t ( *DrawBitmap      ) (ST7796_Object_t*, uint32_t, uint32_t, uint8_t *);
-  int32_t ( *FillRGBRect     ) (ST7796_Object_t*, uint32_t, uint32_t, uint8_t*, uint32_t, uint32_t);
-  int32_t ( *DrawHLine       ) (ST7796_Object_t*, uint32_t, uint32_t, uint32_t, uint32_t);
-  int32_t ( *DrawVLine       ) (ST7796_Object_t*, uint32_t, uint32_t, uint32_t, uint32_t);
-  int32_t ( *FillRect        ) (ST7796_Object_t*, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
-  int32_t ( *GetPixel        ) (ST7796_Object_t*, uint32_t, uint32_t, uint32_t*);
-  int32_t ( *SetPixel        ) (ST7796_Object_t*, uint32_t, uint32_t, uint32_t);
-  int32_t ( *GetXSize        ) (ST7796_Object_t*, uint32_t *);
-  int32_t ( *GetYSize        ) (ST7796_Object_t*, uint32_t *);
-  
-} ST7796_LCD_Drv_t;
-  
+#define ST7796_SETCURSOR(x, y)            ST7796_SETWINDOW(x, x, y, y)
 
-/** @defgroup ST7796_Exported_Constants Exported Constants
-  * @{
-  */
+//-----------------------------------------------------------------------------
+#define ST7796_LCD_INITIALIZED    0x01
+#define ST7796_IO_INITIALIZED     0x02
+static uint8_t Is_ST7796_Initialized = 0;
 
-/** 
-  * @brief  ST7796 Size
-  */  
-#define ST7796_OK                (0)
-#define ST7796_ERROR             (-1)
+const uint8_t EntryRightThenUp = ST7796_MAD_DATA_RIGHT_THEN_UP;
+const uint8_t EntryRightThenDown = ST7796_MAD_DATA_RIGHT_THEN_DOWN;
 
-/** 
-  * @brief  ST7796 ID
-  */  
-#define  ST7796_ID              0x5CU
-  
-/** 
-  * @brief  ST7796 Size
-  */  
-#define  ST7796_WIDTH           320U
-#define  ST7796_HEIGHT          480U
+/* the last set drawing direction is stored here */
+uint8_t LastEntry = ST7796_MAD_DATA_RIGHT_THEN_DOWN;
 
-/**
- *  @brief LCD_OrientationTypeDef
- *  Possible values of Display Orientation
- */
-#define ST7796_ORIENTATION_PORTRAIT         0x00U /* Portrait orientation choice of LCD screen               */
-#define ST7796_ORIENTATION_PORTRAIT_ROT180  0x01U /* Portrait rotated 180� orientation choice of LCD screen  */
-#define ST7796_ORIENTATION_LANDSCAPE        0x02U /* Landscape orientation choice of LCD screen              */
-#define ST7796_ORIENTATION_LANDSCAPE_ROT180 0x03U /* Landscape rotated 180� orientation choice of LCD screen */
+static uint16_t yStart, yEnd;
 
-/**
- *  @brief  Possible values of pixel data format (ie color coding) 
- */
-#define ST7796_FORMAT_RBG444                0x03U /* Pixel format chosen is RGB444 : 12 bpp */
-#define ST7796_FORMAT_RBG565                0x05U /* Pixel format chosen is RGB565 : 16 bpp */
-#define ST7796_FORMAT_RBG666                0x06U /* Pixel format chosen is RGB666 : 18 bpp */
-#define ST7796_FORMAT_DEFAULT               ST7796_FORMAT_RBG565
-  
-/** @defgroup ST7796_Exported_Functions Exported Functions
-  * @{
-  */ 
-int32_t ST7796_RegisterBusIO (ST7796_Object_t *pObj, ST7796_IO_t *pIO);
-int32_t ST7796_Init(ST7796_Object_t *pObj, uint32_t ColorCoding, uint32_t Orientation);
-int32_t ST7796_DeInit(ST7796_Object_t *pObj);
-int32_t ST7796_ReadID(ST7796_Object_t *pObj, uint32_t *Id);
-int32_t ST7796_DisplayOn(ST7796_Object_t *pObj);
-int32_t ST7796_DisplayOff(ST7796_Object_t *pObj);
-int32_t ST7796_SetBrightness(ST7796_Object_t *pObj, uint32_t Brightness);
-int32_t ST7796_GetBrightness(ST7796_Object_t *pObj, uint32_t *Brightness);
-int32_t ST7796_SetOrientation(ST7796_Object_t *pObj, uint32_t Orientation);
-int32_t ST7796_GetOrientation(ST7796_Object_t *pObj, uint32_t *Orientation);
+//-----------------------------------------------------------------------------
+/* Pixel draw and read functions */
 
-int32_t ST7796_SetCursor(ST7796_Object_t *pObj, uint32_t Xpos, uint32_t Ypos);
-int32_t ST7796_DrawBitmap(ST7796_Object_t *pObj, uint32_t Xpos, uint32_t Ypos, uint8_t *pBmp);
-int32_t ST7796_FillRGBRect(ST7796_Object_t *pObj, uint32_t Xpos, uint32_t Ypos, uint8_t *pData, uint32_t Width, uint32_t Height);
-int32_t ST7796_DrawHLine(ST7796_Object_t *pObj, uint32_t Xpos, uint32_t Ypos, uint32_t Length, uint32_t Color);
-int32_t ST7796_DrawVLine(ST7796_Object_t *pObj, uint32_t Xpos, uint32_t Ypos, uint32_t Length, uint32_t Color);
-int32_t ST7796_FillRect(ST7796_Object_t *pObj, uint32_t Xpos, uint32_t Ypos, uint32_t Width, uint32_t Height, uint32_t Color);
-int32_t ST7796_SetPixel(ST7796_Object_t *pObj, uint32_t Xpos, uint32_t Ypos, uint32_t Color);
-int32_t ST7796_GetPixel(ST7796_Object_t *pObj, uint32_t Xpos, uint32_t Ypos, uint32_t *Color);
-int32_t ST7796_GetXSize(ST7796_Object_t *pObj, uint32_t *XSize);
-int32_t ST7796_GetYSize(ST7796_Object_t *pObj, uint32_t *YSize);
+void st7796_Init(void);
+uint32_t st7796_ReadID(void);
+void st7796_DisplayOn(void);
+void st7796_DisplayOff(void);
+void st7796_SetCursor(uint16_t Xpos, uint16_t Ypos);
+void st7796_WritePixel(uint16_t Xpos, uint16_t Ypos, uint16_t RGB_Code);
+uint16_t st7796_ReadPixel(uint16_t Xpos, uint16_t Ypos);
+void st7796_SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Width,uint16_t Height);
+void st7796_DrawHLine(uint16_t RGBCode, uint16_t Xpos, uint16_t Ypos, uint16_t Length);
+void st7796_DrawVLine(uint16_t RGBCode, uint16_t Xpos, uint16_t Ypos, uint16_t Length);
+void st7796_FillRect(uint16_t Xpos, uint16_t Ypos, uint16_t Xsize, uint16_t Ysize, uint16_t RGBCode);
+uint16_t st7796_GetLcdPixelWidth(void);
+uint16_t st7796_GetLcdPixelHeight(void);
+void st7796_DrawBitmap(uint16_t Xpos, uint16_t Ypos, uint8_t *pbmp);
+void st7796_DrawRGBImage(uint16_t Xpos, uint16_t Ypos, uint16_t Xsize, uint16_t Ysize, uint16_t *pData);
+void st7796_ReadRGBImage(uint16_t Xpos, uint16_t Ypos, uint16_t Xsize, uint16_t Ysize, uint16_t *pData);
+void st7796_Scroll(int16_t Scroll, uint16_t TopFix, uint16_t BottonFix);
+void st7796_UserCommand(uint16_t Command, uint8_t *pData, uint32_t Size, uint8_t Mode);
 
-extern ST7796_LCD_Drv_t   ST7796_LCD_Driver;
+#if ST7796_WRITEBITDEPTH == ST7796_READBITDEPTH
+/* 16/16 and 24/24 bit, no need to change bitdepth data */
+#define SetWriteDir()
+#define SetReadDir()
+#else /* #if ST7796_WRITEBITDEPTH == ST7796_READBITDEPTH */
+uint8_t lastdir = 0;
+#if ST7796_WRITEBITDEPTH == 16
+/* 16/24 bit */
+#define SetWriteDir() {                                      \
+  if(lastdir != 0)                                           \
+  {                                                          \
+    LCD_IO_WriteCmd8MultipleData8(ST7796_PIXFMT, "\55", 1);  \
+    lastdir = 0;                                             \
+  }                                                          }
+#define SetReadDir() {                                       \
+  if(lastdir == 0)                                           \
+  {                                                          \
+    LCD_IO_WriteCmd8MultipleData8(ST7796_PIXFMT, "\66", 1);  \
+    lastdir = 1;                                             \
+  }                                                          }
+#elif ST7796_WRITEBITDEPTH == 24
+/* 24/16 bit */
+#define SetWriteDir() {                                      \
+  if(lastdir != 0)                                           \
+  {                                                          \
+    LCD_IO_WriteCmd8MultipleData8(ST7796_PIXFMT, "\66", 1);  \
+    lastdir = 0;                                             \
+  }                                                          }
+#define SetReadDir() {                                       \
+  if(lastdir == 0)                                           \
+  {                                                          \
+    LCD_IO_WriteCmd8MultipleData8(ST7796_PIXFMT, "\55", 1);  \
+    lastdir = 1;                                             \
+  }                                                          }
+#endif /* #elif ILI9488_WRITEBITDEPTH == 24 */
+#endif /* #else ILI9488_WRITEBITDEPTH == ILI9488_READBITDEPTH */
 
+#if ST7796_WRITEBITDEPTH == 16
+#define  LCD_IO_DrawFill(Color, Size) { \
+  SetWriteDir(); \
+  LCD_IO_WriteCmd8DataFill16(ST7796_RAMWR, Color, Size); }            /* Fill 16 bit pixel(s) */
+#define  LCD_IO_DrawBitmap(pData, Size) { \
+  SetWriteDir(); \
+  LCD_IO_WriteCmd8MultipleData16(ST7796_RAMWR, pData, Size); }        /* Draw 16 bit bitmap */
+#elif ST7796_WRITEBITDEPTH == 24
+#define  LCD_IO_DrawFill(Color, Size) { \
+  SetWriteDir(); \
+  LCD_IO_WriteCmd8DataFill16to24(ST7796_RAMWR, Color, Size); }        /* Fill 24 bit pixel(s) from 16 bit color code */
+#define  LCD_IO_DrawBitmap(pData, Size) { \
+  SetWriteDir(); \
+  LCD_IO_WriteCmd8MultipleData16to24(ST7796_RAMWR, pData, Size); }    /* Draw 24 bit Lcd bitmap from 16 bit bitmap data */
+#endif /* #elif ST7796_WRITEBITDEPTH == 24 */
 
-#ifdef __cplusplus
-}
-#endif
+#if ST7796_READBITDEPTH == 16
+#define  LCD_IO_ReadBitmap(pData, Size) { \
+  SetReadDir(); \
+  LCD_IO_ReadCmd8MultipleData16(ST7796_RAMRD, pData, Size, 1); }      /* Read 16 bit LCD */
+#elif ST7796_READBITDEPTH == 24
+#define  LCD_IO_ReadBitmap(pData, Size) { \
+  SetReadDir(); \
+  LCD_IO_ReadCmd8MultipleData24to16(ST7796_RAMRD, pData, Size, 1); }  /* Read 24 bit Lcd and convert to 16 bit bitmap */
+#endif /* #elif ST7796_READBITDEPTH == 24 */
 
 #endif /* ST7796_H */
 
