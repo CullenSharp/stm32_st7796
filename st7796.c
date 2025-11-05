@@ -14,38 +14,26 @@
 #include "st7796.h"
 #include "st7796_reg.h"
 
-void st7796_Init(void);
-uint32_t st7796_ReadID(void);
-void st7796_DisplayOn(void);
-void st7796_DisplayOff(void);
-void st7796_SetCursor(uint16_t Xpos, uint16_t Ypos);
-void st7796_WritePixel(uint16_t Xpos, uint16_t Ypos, uint16_t RGB_Code);
-uint16_t st7796_ReadPixel(uint16_t Xpos, uint16_t Ypos);
-void st7796_SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Width,
-		uint16_t Height);
-void st7796_DrawHLine(uint16_t RGBCode, uint16_t Xpos, uint16_t Ypos,
-		uint16_t Length);
-void st7796_DrawVLine(uint16_t RGBCode, uint16_t Xpos, uint16_t Ypos,
-		uint16_t Length);
-void st7796_FillRect(uint16_t Xpos, uint16_t Ypos, uint16_t Xsize,
-		uint16_t Ysize, uint16_t RGBCode);
-uint16_t st7796_GetLcdPixelWidth(void);
-uint16_t st7796_GetLcdPixelHeight(void);
-void st7796_DrawBitmap(uint16_t Xpos, uint16_t Ypos, uint8_t *pbmp);
-void st7796_DrawRGBImage(uint16_t Xpos, uint16_t Ypos, uint16_t Xsize,
-		uint16_t Ysize, uint16_t *pData);
-void st7796_ReadRGBImage(uint16_t Xpos, uint16_t Ypos, uint16_t Xsize,
-		uint16_t Ysize, uint16_t *pData);
-void st7796_Scroll(int16_t Scroll, uint16_t TopFix, uint16_t BottonFix);
-void st7796_UserCommand(uint16_t Command, uint8_t *pData, uint32_t Size,
-		uint8_t Mode);
-
-LCD_DrvTypeDef st7796_drv = { st7796_Init, st7796_ReadID, st7796_DisplayOn,
-		st7796_DisplayOff, st7796_SetCursor, st7796_WritePixel,
-		st7796_ReadPixel, st7796_SetDisplayWindow, st7796_DrawHLine,
-		st7796_DrawVLine, st7796_GetLcdPixelWidth, st7796_GetLcdPixelHeight,
-		st7796_DrawBitmap, st7796_DrawRGBImage, st7796_FillRect,
-		st7796_ReadRGBImage, st7796_Scroll, st7796_UserCommand };
+LCD_DrvTypeDef st7796_drv = {
+		st7796_Init,
+		st7796_ReadID,
+		st7796_DisplayOn,
+		st7796_DisplayOff,
+		st7796_SetCursor,
+		st7796_WritePixel,
+		st7796_ReadPixel,
+		st7796_SetDisplayWindow,
+		st7796_DrawHLine,
+		st7796_DrawVLine,
+		st7796_GetLcdPixelWidth,
+		st7796_GetLcdPixelHeight,
+		st7796_DrawBitmap,
+		st7796_DrawRGBImage,
+		st7796_FillRect,
+		st7796_ReadRGBImage,
+		st7796_Scroll,
+		st7796_UserCommand
+};
 
 #define TRANSDATAMAXSIZE  4
 union {
