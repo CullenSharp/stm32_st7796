@@ -98,13 +98,13 @@ uint8_t lastdir = 0;
 #define SetWriteDir() {                                      \
   if(lastdir != 0)                                           \
   {                                                          \
-    LCD_IO_WriteCmd8MultipleData8(ST7796_PIXFMT, "\55", 1);  \
+    LCD_IO_WriteCmd8MultipleData8(ST7796_COLORMODE, "\55", 1);  \
     lastdir = 0;                                             \
   }                                                          }
 #define SetReadDir() {                                       \
   if(lastdir == 0)                                           \
   {                                                          \
-    LCD_IO_WriteCmd8MultipleData8(ST7796_PIXFMT, "\66", 1);  \
+    LCD_IO_WriteCmd8MultipleData8(ST7796_COLORMODE, "\66", 1);  \
     lastdir = 1;                                             \
   }                                                          }
 #elif ST7796_WRITEBITDEPTH == 24
@@ -112,13 +112,13 @@ uint8_t lastdir = 0;
 #define SetWriteDir() {                                      \
   if(lastdir != 0)                                           \
   {                                                          \
-    LCD_IO_WriteCmd8MultipleData8(ST7796_PIXFMT, "\66", 1);  \
+    LCD_IO_WriteCmd8MultipleData8(ST7796_COLORMODE, "\66", 1);  \
     lastdir = 0;                                             \
   }                                                          }
 #define SetReadDir() {                                       \
   if(lastdir == 0)                                           \
   {                                                          \
-    LCD_IO_WriteCmd8MultipleData8(ST7796_PIXFMT, "\55", 1);  \
+    LCD_IO_WriteCmd8MultipleData8(ST7796_COLORMODE, "\55", 1);  \
     lastdir = 1;                                             \
   }                                                          }
 #endif /* #elif ILI9488_WRITEBITDEPTH == 24 */
@@ -127,27 +127,27 @@ uint8_t lastdir = 0;
 #if ST7796_WRITEBITDEPTH == 16
 #define  LCD_IO_DrawFill(Color, Size) { \
   SetWriteDir(); \
-  LCD_IO_WriteCmd8DataFill16(ST7796_RAMWR, Color, Size); }            /* Fill 16 bit pixel(s) */
+  LCD_IO_WriteCmd8DataFill16(ST7796_WRITE_RAM, Color, Size); }            /* Fill 16 bit pixel(s) */
 #define  LCD_IO_DrawBitmap(pData, Size) { \
   SetWriteDir(); \
-  LCD_IO_WriteCmd8MultipleData16(ST7796_RAMWR, pData, Size); }        /* Draw 16 bit bitmap */
+  LCD_IO_WriteCmd8MultipleData16(ST7796_WRITE_RAM, pData, Size); }        /* Draw 16 bit bitmap */
 #elif ST7796_WRITEBITDEPTH == 24
 #define  LCD_IO_DrawFill(Color, Size) { \
   SetWriteDir(); \
-  LCD_IO_WriteCmd8DataFill16to24(ST7796_RAMWR, Color, Size); }        /* Fill 24 bit pixel(s) from 16 bit color code */
+  LCD_IO_WriteCmd8DataFill16to24(ST7796_WRITE_RAM, Color, Size); }        /* Fill 24 bit pixel(s) from 16 bit color code */
 #define  LCD_IO_DrawBitmap(pData, Size) { \
   SetWriteDir(); \
-  LCD_IO_WriteCmd8MultipleData16to24(ST7796_RAMWR, pData, Size); }    /* Draw 24 bit Lcd bitmap from 16 bit bitmap data */
+  LCD_IO_WriteCmd8MultipleData16to24(ST7796_WRITE_RAM, pData, Size); }    /* Draw 24 bit Lcd bitmap from 16 bit bitmap data */
 #endif /* #elif ST7796_WRITEBITDEPTH == 24 */
 
 #if ST7796_READBITDEPTH == 16
 #define  LCD_IO_ReadBitmap(pData, Size) { \
   SetReadDir(); \
-  LCD_IO_ReadCmd8MultipleData16(ST7796_RAMRD, pData, Size, 1); }      /* Read 16 bit LCD */
+  LCD_IO_ReadCmd8MultipleData16(ST7796_READ_RAM, pData, Size, 1); }      /* Read 16 bit LCD */
 #elif ST7796_READBITDEPTH == 24
 #define  LCD_IO_ReadBitmap(pData, Size) { \
   SetReadDir(); \
-  LCD_IO_ReadCmd8MultipleData24to16(ST7796_RAMRD, pData, Size, 1); }  /* Read 24 bit Lcd and convert to 16 bit bitmap */
+  LCD_IO_ReadCmd8MultipleData24to16(ST7796_READ_RAM, pData, Size, 1); }  /* Read 24 bit Lcd and convert to 16 bit bitmap */
 #endif /* #elif ST7796_READBITDEPTH == 24 */
 
 #endif /* ST7796_H */
